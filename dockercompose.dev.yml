@@ -1,0 +1,84 @@
+services:
+  warehouse-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: warehouse-api
+    restart: unless-stopped
+    depends_on:
+      - warehouse-postgres
+      - warehouse-redis
+    ports:
+      - "2003:2003"
+
+    environment:
+      NODE_ENV: dev
+
+      # Postgres (connect qua hostname service)
+      DB_HOST: warehouse-postgres
+      DB_PORT: 5432
+      DB_NAME: warehouse
+      DB_USER: warehouse_user
+      DB_PASSWORD: warehouse_pass
+
+      # Redis (connect qua hostname service)
+      REDIS_HOST: warehouse-redis
+      REDIS_PORT: 6379
+
+      # Nếu bạn dùng DATABASE_URL thì dùng cái này và bỏ DB_* ở trên
+      # DATABASE_URL: postgres://warehouse_user:warehouse_pass@warehouse-postgres:5432/warehouse
+
+    networks:
+      - warehouse-net
+
+    # Tối ưu bảo mật (nếu app không cần ghi file)
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  warehouse-redis:
+    image: redis:7-alpine
+    container_name: warehouse-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - warehouse_redis_data:/data
+    networks:
+      - warehouse-net
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  warehouse-postgres:
+    image: postgres:16-alpine
+    container_name: warehouse-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: warehouse
+      POSTGRES_USER: warehouse_user
+      POSTGRES_PASSWORD: warehouse_pass
+    volumes:
+      - warehouse_pg_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-net
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U warehouse_user -d warehouse"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  warehouse-net:
+    driver: bridge
+
+volumes:
+  warehouse_pg_data:
+  warehouse_redis_data:
