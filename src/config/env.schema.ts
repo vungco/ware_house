@@ -46,6 +46,10 @@ export const EnvSchema = z
 
     // Ví dụ boolean flag
     ENABLE_SWAGGER: z.preprocess((v) => toBoolean(v, false), z.boolean()).optional(),
+
+    JWT_SECRET: z.string().min(10),
+    JWT_EXPIRES_IN: z.string().default('1d'),
+
   })
   .superRefine((env, ctx) => {
     // Nếu có DATABASE_URL thì không bắt buộc DB_* (tùy style)
