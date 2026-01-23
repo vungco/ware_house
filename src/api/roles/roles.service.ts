@@ -3,13 +3,13 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()
-export class RoleService {
+export class RolesService {
   create(createRoleDto: CreateRoleDto) {
     return 'This action adds a new role';
   }
 
   findAll() {
-    return `This action returns all role`;
+    return `This action returns all roles`;
   }
 
   findOne(id: number) {

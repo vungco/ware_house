@@ -13,9 +13,12 @@ import { ImportReceiptsModule } from './api/import-receipts/import-receipts.modu
 import { ExportReceiptsModule } from './api/export-receipts/export-receipts.module';
 import { StockAdjustmentsModule } from './api/stock-adjustments/stock-adjustments.module';
 import { AuditLogsModule } from './api/audit-logs/audit-logs.module';
+import { AuthsModule } from './api/auths/auths.module';
+import { UsersModule } from './api/users/users.module';
+import { RolesModule } from './api/roles/roles.module';
 
 @Module({
-  imports: [DatabaseModule,RedisModule, RoleModule, UserModule, WarehousesModule, SuppliersModule, MaterialsModule, InventoriesModule, ImportReceiptsModule, ExportReceiptsModule, StockAdjustmentsModule, AuditLogsModule],
+  imports: [DatabaseModule,RedisModule, RoleModule, UserModule, WarehousesModule, SuppliersModule, MaterialsModule, InventoriesModule, ImportReceiptsModule, ExportReceiptsModule, StockAdjustmentsModule, AuditLogsModule, AuthsModule, UsersModule, RolesModule],
   controllers: [AppController],
   providers: [AppService],
 })
