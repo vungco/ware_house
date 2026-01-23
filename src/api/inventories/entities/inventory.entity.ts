@@ -7,7 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { DecimalTransformer } from '../../common/transformers/decimal.transformer';
+import { DecimalTransformer } from '../../../common/transformers/decimal.transformer';
 import { Warehouse } from '../../warehouses/entities/warehouse.entity';
 import { Material } from '../../materials/entities/material.entity';
 
