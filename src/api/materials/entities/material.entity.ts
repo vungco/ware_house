@@ -1,6 +1,6 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { Inventory } from '../../inventory/entities/inventory.entity';
+import { Inventory } from '../../inventories/entities/inventory.entity';
 import { ImportReceiptItem } from '../../import-receipts/entities/import-receipt-item.entity';
 import { ExportReceiptItem } from '../../export-receipts/entities/export-receipt-item.entity';
 import { StockAdjustment } from '../../stock-adjustments/entities/stock-adjustment.entity';
