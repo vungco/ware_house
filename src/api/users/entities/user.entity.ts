@@ -12,7 +12,7 @@ export enum UserStatus {
 export class User extends BaseEntity {
   @Index({ unique: true })
   @Column({ type: 'varchar', length: 80 })
-  username: string;
+  user_name: string;
 
   @Column({ type: 'varchar', length: 255 })
   password_hash: string;

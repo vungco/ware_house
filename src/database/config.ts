@@ -17,10 +17,10 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       autoLoadEntities: true,
 
       // ❌ production không bật synchronize
-      synchronize: false,
+      synchronize: true,
 
       // log SQL ở dev
-      logging: env.NODE_ENV === 'dev',
+      // logging: env.NODE_ENV === 'dev',
 
       // (tuỳ chọn) cấu hình pool cho production
       extra: {
