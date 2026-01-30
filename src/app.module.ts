@@ -3,8 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { RedisModule } from './cache/redis.module';
-import { RoleModule } from './api/roles/role.module';
-import { UserModule } from './api/users/user.module';
+import { RolesModule } from './api/roles/roles.module';
+import { UsersModule } from './api/users/users.module';
 import { WarehousesModule } from './api/warehouses/warehouses.module';
 import { SuppliersModule } from './api/suppliers/suppliers.module';
 import { MaterialsModule } from './api/materials/materials.module';
@@ -13,13 +13,27 @@ import { ImportReceiptsModule } from './api/import-receipts/import-receipts.modu
 import { ExportReceiptsModule } from './api/export-receipts/export-receipts.module';
 import { StockAdjustmentsModule } from './api/stock-adjustments/stock-adjustments.module';
 import { AuditLogsModule } from './api/audit-logs/audit-logs.module';
-import { AuthsModule } from './api/auths/auths.module';
-import { UsersModule } from './api/users/users.module';
-import { RolesModule } from './api/roles/roles.module';
+import { AuthModule } from './api/auth/auth.module';
 
 @Module({
-  imports: [DatabaseModule,RedisModule, RoleModule, UserModule, WarehousesModule, SuppliersModule, MaterialsModule, InventoriesModule, ImportReceiptsModule, ExportReceiptsModule, StockAdjustmentsModule, AuditLogsModule, AuthsModule, UsersModule, RolesModule],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        DatabaseModule,
+        RedisModule,
+        RolesModule,
+        UsersModule,
+        WarehousesModule,
+        SuppliersModule,
+        MaterialsModule,
+        InventoriesModule,
+        ImportReceiptsModule,
+        ExportReceiptsModule,
+        StockAdjustmentsModule,
+        AuditLogsModule,
+        UsersModule,
+        RolesModule,
+        AuthModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
