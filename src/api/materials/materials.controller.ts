@@ -13,45 +13,48 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleName } from '../roles/entities/role.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RolesGuard } from '../auth/decorators/roles.guard';
-import { UsersService } from '../users/users.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { MaterialsService } from './materials.service';
+import { CreateMaterialDto } from './dto/create-material.dto';
+import { UpdateMaterialDto } from './dto/update-material.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(RoleName.QUAN_LY)
+@ApiBearerAuth('Authorization')
 export class MaterialsController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly materialsService: MaterialsService) {}
 
   // ================= CREATE =================
   @Post()
   create(
-    @Body() createUserDto: CreateUserDto,
+    @Body() createMaterialDto: CreateMaterialDto,
     @CurrentUser() currentUser: User,
   ) {
-    return this.usersService.create(createUserDto, currentUser);
+    return this.materialsService.create(createMaterialDto, currentUser);
   }
 
   // ================= READ =================
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return this.materialsService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    return this.materialsService.findOne(id);
   }
 
   // ================= UPDATE =================
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateMaterialDto: UpdateMaterialDto,
     @CurrentUser() currentUser: User,
   ) {
-    return this.usersService.update(id, updateUserDto, currentUser);
+    return this.materialsService.update(id, updateMaterialDto, currentUser);
   }
 
   // ================= DELETE =================
@@ -60,6 +63,6 @@ export class MaterialsController {
     @Param('id') id: string,
     @CurrentUser() currentUser: User,
   ) {
-    return this.usersService.remove(id, currentUser);
+    return this.materialsService.remove(id, currentUser);
   }
 }

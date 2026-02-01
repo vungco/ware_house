@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { StockAdjustmentsService } from './stock-adjustments.service';
-import { CreateStockAdjustmentDto } from './dto/create-stock-adjustment.dto';
-import { UpdateStockAdjustmentDto } from './dto/update-stock-adjustment.dto';
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { StockAdjustmentsService } from "./stock-adjustments.service";
+import { CreateStockAdjustmentDto } from "./dto/create-stock-adjustment.dto";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { User } from "../users/entities/user.entity";
+import { FindStockAdjustmentDto } from "./dto/find-stock.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 @Controller('stock-adjustments')
+@ApiBearerAuth('Authorization')
+@UseGuards(JwtAuthGuard)
 export class StockAdjustmentsController {
-  constructor(private readonly stockAdjustmentsService: StockAdjustmentsService) {}
+  constructor(private readonly service: StockAdjustmentsService) {}
 
   @Post()
-  create(@Body() createStockAdjustmentDto: CreateStockAdjustmentDto) {
-    return this.stockAdjustmentsService.create(createStockAdjustmentDto);
+  create(
+    @Body() dto: CreateStockAdjustmentDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.service.create(dto, user);
   }
 
   @Get()
-  findAll() {
-    return this.stockAdjustmentsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stockAdjustmentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStockAdjustmentDto: UpdateStockAdjustmentDto) {
-    return this.stockAdjustmentsService.update(+id, updateStockAdjustmentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stockAdjustmentsService.remove(+id);
+  findAll(@Query() query: FindStockAdjustmentDto) {
+    return this.service.findAll(query);
   }
 }
