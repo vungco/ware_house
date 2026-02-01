@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleName } from '../roles/entities/role.entity';
@@ -22,47 +13,43 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RoleName.QUAN_LY)
 @ApiBearerAuth('Authorization')
 export class MaterialsController {
-  constructor(private readonly materialsService: MaterialsService) {}
+    constructor(private readonly materialsService: MaterialsService) {}
 
-  // ================= CREATE =================
-  @Post()
-  create(
-    @Body() createMaterialDto: CreateMaterialDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.materialsService.create(createMaterialDto, currentUser);
-  }
+    // ================= CREATE =================
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Post()
+    create(@Body() createMaterialDto: CreateMaterialDto, @CurrentUser() currentUser: User) {
+        return this.materialsService.create(createMaterialDto, currentUser);
+    }
 
-  // ================= READ =================
-  @Get()
-  findAll() {
-    return this.materialsService.findAll();
-  }
+    // ================= READ =================
+    @Get()
+    findAll() {
+        return this.materialsService.findAll();
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.materialsService.findOne(id);
-  }
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.materialsService.findOne(id);
+    }
 
-  // ================= UPDATE =================
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateMaterialDto: UpdateMaterialDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.materialsService.update(id, updateMaterialDto, currentUser);
-  }
+    // ================= UPDATE =================
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Patch(':id')
+    update(
+        @Param('id') id: string,
+        @Body() updateMaterialDto: UpdateMaterialDto,
+        @CurrentUser() currentUser: User,
+    ) {
+        return this.materialsService.update(id, updateMaterialDto, currentUser);
+    }
 
-  // ================= DELETE =================
-  @Delete(':id')
-  remove(
-    @Param('id') id: string,
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.materialsService.remove(id, currentUser);
-  }
+    // ================= DELETE =================
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Delete(':id')
+    remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
+        return this.materialsService.remove(id, currentUser);
+    }
 }

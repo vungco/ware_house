@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { WarehousesService } from './warehouses.service';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
@@ -23,45 +14,37 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('Authorization')
 export class WarehousesController {
-  constructor(private readonly warehousesService: WarehousesService) {}
+    constructor(private readonly warehousesService: WarehousesService) {}
 
-  @Post()
-  @Roles(RoleName.QUAN_LY)
-  create(
-    @Body() dto: CreateWarehouseDto,
-    @CurrentUser() user: User,
-  ) {
-    return this.warehousesService.create(dto, user);
-  }
+    @Post()
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    create(@Body() dto: CreateWarehouseDto, @CurrentUser() user: User) {
+        return this.warehousesService.create(dto, user);
+    }
 
-  @Get()
-  @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
-  findAll() {
-    return this.warehousesService.findAll();
-  }
+    @Get()
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    findAll() {
+        return this.warehousesService.findAll();
+    }
 
-  @Get(':id')
-  @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
-  findOne(@Param('id') id: string) {
-    return this.warehousesService.findOne(id);
-  }
+    @Get(':id')
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    findOne(@Param('id') id: string) {
+        return this.warehousesService.findOne(id);
+    }
 
-  @Patch(':id')
-  @Roles(RoleName.QUAN_LY)
-  update(
-    @Param('id') id: string,
-    @Body() dto: UpdateWarehouseDto,
-    @CurrentUser() user: User,
-  ) {
-    return this.warehousesService.update(id, dto, user);
-  }
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Patch(':id')
+    @Roles(RoleName.QUAN_LY)
+    update(@Param('id') id: string, @Body() dto: UpdateWarehouseDto, @CurrentUser() user: User) {
+        return this.warehousesService.update(id, dto, user);
+    }
 
-  @Delete(':id')
-  @Roles(RoleName.QUAN_LY)
-  remove(
-    @Param('id') id: string,
-    @CurrentUser() user: User,
-  ) {
-    return this.warehousesService.remove(id, user);
-  }
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Delete(':id')
+    @Roles(RoleName.QUAN_LY)
+    remove(@Param('id') id: string, @CurrentUser() user: User) {
+        return this.warehousesService.remove(id, user);
+    }
 }

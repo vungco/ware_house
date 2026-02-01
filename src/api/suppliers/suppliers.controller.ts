@@ -18,7 +18,7 @@ export class SuppliersController {
     constructor(private readonly suppliersService: SuppliersService) {}
 
     @Post()
-    @Roles(RoleName.QUAN_LY)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     create(@Body() dto: CreateSupplierDto, @CurrentUser() currentUser: User) {
         return this.suppliersService.create(dto, currentUser);
     }
@@ -33,6 +33,7 @@ export class SuppliersController {
         return this.suppliersService.findOne(id);
     }
 
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     @Patch(':id')
     @Roles(RoleName.QUAN_LY)
     update(
@@ -43,6 +44,7 @@ export class SuppliersController {
         return this.suppliersService.update(id, dto, currentUser);
     }
 
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     @Delete(':id')
     @Roles(RoleName.QUAN_LY)
     remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
