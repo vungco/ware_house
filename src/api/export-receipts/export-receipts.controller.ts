@@ -36,12 +36,13 @@ export class ExportReceiptsController {
     }
 
     // ================= CANCEL =================
-    @Roles(RoleName.QUAN_LY)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     @Patch(':id/cancel')
     cancel(@Param('id') id: string, @CurrentUser() user: User) {
         return this.exportReceiptsService.cancel(id, user);
     }
 
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     @Patch(':id/complete')
     complete(@Param('id') id: string, @CurrentUser() user: User) {
         return this.exportReceiptsService.complete(id, user);
