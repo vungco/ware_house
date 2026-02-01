@@ -7,7 +7,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   user_name: string;
 
-  @ApiProperty({ example: 'thukho@warehouse.local' })
+  @ApiProperty({ example: 'quanly@company.com' })
   @IsEmail()
   email: string;
 
