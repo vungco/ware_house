@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -11,7 +11,7 @@ import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { AuditAction } from '../audit-logs/entities/audit-log.entity';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit{
     private readonly logger = new Logger(UsersService.name);
 
     constructor(
@@ -23,6 +23,55 @@ export class UsersService {
 
         private readonly auditLogsService: AuditLogsService,
     ) {}
+
+    async onModuleInit() {
+    await this.seedQuanLy();
+  }
+
+  private async seedQuanLy() {
+    // 1. Tìm role QUAN_LY
+    let roleQuanLy = await this.roleRepository.findOne({
+      where: { name: RoleName.QUAN_LY },
+    });
+
+    if (!roleQuanLy) {
+      roleQuanLy = this.roleRepository.create({
+        name: RoleName.QUAN_LY,
+        description: 'Quản lý hệ thống',
+      });
+      await this.roleRepository.save(roleQuanLy);
+    }
+
+    // 2. Kiểm tra đã có user QUAN_LY chưa
+    const existedQuanLy = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'role')
+      .where('role.name = :role', { role: RoleName.QUAN_LY })
+      .getOne();
+
+    if (existedQuanLy) {
+      this.logger.log('Seed QUẢN_LÝ: đã tồn tại, bỏ qua');
+      return;
+    }
+
+    // 3. Hash mật khẩu
+    const passwordHash = await bcrypt.hash('123456', 10);
+
+    // 4. Tạo user QUẢN_LÝ
+    const quanLyUser = this.userRepository.create({
+      user_name: 'quanly',
+      full_name: 'Quản lý hệ thống',
+      email: 'quanly@company.com',
+      password_hash: passwordHash,
+      status: UserStatus.ACTIVE,
+      roles: [roleQuanLy],
+    });
+
+    await this.userRepository.save(quanLyUser);
+
+    this.logger.log('✅ Seed tài khoản QUẢN_LÝ thành công');
+  }
+
 
     // ================= CREATE =================
     async create(dto: CreateUserDto, currentUser: User) {
