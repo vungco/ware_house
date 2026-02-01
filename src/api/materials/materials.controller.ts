@@ -11,7 +11,7 @@ import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
-@Controller('users')
+@Controller('material')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('Authorization')
 export class MaterialsController {
