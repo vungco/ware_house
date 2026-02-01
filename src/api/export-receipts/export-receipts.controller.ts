@@ -1,34 +1,49 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Patch, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExportReceiptsService } from './export-receipts.service';
 import { CreateExportReceiptDto } from './dto/create-export-receipt.dto';
-import { UpdateExportReceiptDto } from './dto/update-export-receipt.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RoleName } from '../roles/entities/role.entity';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { User } from '../users/entities/user.entity';
+import { RolesGuard } from '../auth/decorators/roles.guard';
 
+@ApiTags('Export Receipts')
+@ApiBearerAuth('Authorization')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('export-receipts')
 export class ExportReceiptsController {
-  constructor(private readonly exportReceiptsService: ExportReceiptsService) {}
+    constructor(private readonly exportReceiptsService: ExportReceiptsService) {}
 
-  @Post()
-  create(@Body() createExportReceiptDto: CreateExportReceiptDto) {
-    return this.exportReceiptsService.create(createExportReceiptDto);
-  }
+    // ================= CREATE =================
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Post()
+    create(@Body() dto: CreateExportReceiptDto, @CurrentUser() user: User) {
+        return this.exportReceiptsService.create(dto, user);
+    }
 
-  @Get()
-  findAll() {
-    return this.exportReceiptsService.findAll();
-  }
+    // ================= FIND ALL =================
+    @Get()
+    findAll() {
+        return this.exportReceiptsService.findAll();
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.exportReceiptsService.findOne(+id);
-  }
+    // ================= FIND ONE =================
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.exportReceiptsService.findOne(id);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExportReceiptDto: UpdateExportReceiptDto) {
-    return this.exportReceiptsService.update(+id, updateExportReceiptDto);
-  }
+    // ================= CANCEL =================
+    @Roles(RoleName.QUAN_LY)
+    @Patch(':id/cancel')
+    cancel(@Param('id') id: string, @CurrentUser() user: User) {
+        return this.exportReceiptsService.cancel(id, user);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.exportReceiptsService.remove(+id);
-  }
+    @Patch(':id/complete')
+    complete(@Param('id') id: string, @CurrentUser() user: User) {
+        return this.exportReceiptsService.complete(id, user);
+    }
 }

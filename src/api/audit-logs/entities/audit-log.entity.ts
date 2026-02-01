@@ -12,6 +12,7 @@ export enum AuditAction {
     APPROVE = 'APPROVE',
     REJECT = 'REJECT',
     CANCEL = 'CANCEL',
+    COMPLETE= 'COMPLETE',
 
     // ===== INVENTORY =====
     STOCK_INCREASE = 'STOCK_INCREASE',
