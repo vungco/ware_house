@@ -1,24 +1,37 @@
-import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { WarehouseStatus } from '../entities/warehouse.entity';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateWarehouseDto {
-    @IsString()
-    @IsNotEmpty()
-    code: string;
+  @ApiProperty({
+    example: 'WH_001',
+    description: 'Mã kho (duy nhất)',
+  })
+  @IsString()
+  @IsNotEmpty()
+  code: string;
 
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @ApiProperty({
+    example: 'Kho Hà Nội',
+    description: 'Tên kho',
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsOptional()
-    @IsString()
-    location?: string;
+  @ApiPropertyOptional({
+    example: 'Thanh Xuân, Hà Nội',
+    description: 'Vị trí kho',
+  })
+  @IsOptional()
+  @IsString()
+  location?: string;
 
-    @ApiProperty({
-        example: 'quanly@warehouse.local',
-        description: 'Email đăng nhập',
-    })
-    @IsEnum(WarehouseStatus)
-    status: WarehouseStatus;
+  @ApiProperty({
+    enum: WarehouseStatus,
+    example: WarehouseStatus.ACTIVE,
+    description: 'Trạng thái kho',
+  })
+  @IsEnum(WarehouseStatus)
+  status: WarehouseStatus;
 }

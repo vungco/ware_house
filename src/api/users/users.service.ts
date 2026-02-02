@@ -1,6 +1,13 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    Logger,
+    NotFoundException,
+    OnModuleInit,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import { User, UserStatus } from './entities/user.entity';
@@ -11,7 +18,7 @@ import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { AuditAction } from '../audit-logs/entities/audit-log.entity';
 
 @Injectable()
-export class UsersService implements OnModuleInit{
+export class UsersService implements OnModuleInit {
     private readonly logger = new Logger(UsersService.name);
 
     constructor(
@@ -25,56 +32,65 @@ export class UsersService implements OnModuleInit{
     ) {}
 
     async onModuleInit() {
-    await this.seedQuanLy();
-  }
-
-  private async seedQuanLy() {
-    // 1. Tìm role QUAN_LY
-    let roleQuanLy = await this.roleRepository.findOne({
-      where: { name: RoleName.QUAN_LY },
-    });
-
-    if (!roleQuanLy) {
-      roleQuanLy = this.roleRepository.create({
-        name: RoleName.QUAN_LY,
-        description: 'Quản lý hệ thống',
-      });
-      await this.roleRepository.save(roleQuanLy);
+        await this.seedQuanLy();
     }
 
-    // 2. Kiểm tra đã có user QUAN_LY chưa
-    const existedQuanLy = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoin('user.roles', 'role')
-      .where('role.name = :role', { role: RoleName.QUAN_LY })
-      .getOne();
+    private async seedQuanLy() {
+        // 1. Tìm role QUAN_LY
+        let roleQuanLy = await this.roleRepository.findOne({
+            where: { name: RoleName.QUAN_LY },
+        });
 
-    if (existedQuanLy) {
-      this.logger.log('Seed QUẢN_LÝ: đã tồn tại, bỏ qua');
-      return;
+        if (!roleQuanLy) {
+            roleQuanLy = this.roleRepository.create({
+                name: RoleName.QUAN_LY,
+                description: 'Quản lý hệ thống',
+            });
+            await this.roleRepository.save(roleQuanLy);
+        }
+
+        // 2. Kiểm tra đã có user QUAN_LY chưa
+        const existedQuanLy = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoin('user.roles', 'role')
+            .where('role.name = :role', { role: RoleName.QUAN_LY })
+            .getOne();
+
+        if (existedQuanLy) {
+            this.logger.log('Seed QUẢN_LÝ: đã tồn tại, bỏ qua');
+            return;
+        }
+
+        // 3. Hash mật khẩu
+        const passwordHash = await bcrypt.hash('123456', 10);
+
+        // 4. Tạo user QUẢN_LÝ
+        const quanLyUser = this.userRepository.create({
+            user_name: 'quanly',
+            full_name: 'Quản lý hệ thống',
+            email: 'quanly@company.com',
+            password_hash: passwordHash,
+            status: UserStatus.ACTIVE,
+            roles: [roleQuanLy],
+        });
+
+        await this.userRepository.save(quanLyUser);
+
+        this.logger.log('✅ Seed tài khoản QUẢN_LÝ thành công');
     }
-
-    // 3. Hash mật khẩu
-    const passwordHash = await bcrypt.hash('123456', 10);
-
-    // 4. Tạo user QUẢN_LÝ
-    const quanLyUser = this.userRepository.create({
-      user_name: 'quanly',
-      full_name: 'Quản lý hệ thống',
-      email: 'quanly@company.com',
-      password_hash: passwordHash,
-      status: UserStatus.ACTIVE,
-      roles: [roleQuanLy],
-    });
-
-    await this.userRepository.save(quanLyUser);
-
-    this.logger.log('✅ Seed tài khoản QUẢN_LÝ thành công');
-  }
-
 
     // ================= CREATE =================
     async create(dto: CreateUserDto, currentUser: User) {
+        // 1. Check trùng user
+        const existedUser = await this.userRepository.findOne({
+            where: [{ email: dto.email }, { user_name: dto.user_name }],
+        });
+
+        if (existedUser) {
+            throw new BadRequestException('User already exists');
+        }
+
+        // 2. Check quyền tạo QUAN_LY
         const isCurrentUserQuanLy = this.hasRole(currentUser, RoleName.QUAN_LY);
         const isCreatingQuanLy = dto.roles?.includes(RoleName.QUAN_LY);
 
@@ -82,12 +98,19 @@ export class UsersService implements OnModuleInit{
             throw new ForbiddenException('QUẢN_LÝ không được tạo thêm tài khoản QUẢN_LÝ');
         }
 
+        // 3. Lấy roles + validate
         const roles = await this.roleRepository.findBy({
-            name: dto.roles as any,
+            name: In(dto.roles as any),
         });
 
+        if (!roles || roles.length === 0) {
+            throw new BadRequestException('Roles not found');
+        }
+
+        // 4. Hash password
         const passwordHash = await bcrypt.hash(dto.password, 10);
 
+        // 5. Tạo user entity
         const user = this.userRepository.create({
             user_name: dto.user_name,
             email: dto.email,
@@ -97,8 +120,10 @@ export class UsersService implements OnModuleInit{
             roles,
         });
 
+        // 6. Save user
         await this.userRepository.save(user);
 
+        // 7. Ghi audit log
         await this.auditLogsService.create({
             userId: currentUser.id,
             action: AuditAction.CREATE,
@@ -110,7 +135,11 @@ export class UsersService implements OnModuleInit{
             },
         });
 
-        return user;
+        // 8. Query lại user kèm roles (QUAN TRỌNG)
+        return this.userRepository.findOne({
+            where: { id: user.id },
+            relations: ['roles'],
+        });
     }
 
     hasRole(user: User, role: RoleName) {
@@ -163,7 +192,7 @@ export class UsersService implements OnModuleInit{
 
         if (dto.roles) {
             user.roles = await this.roleRepository.findBy({
-                name: dto.roles as any,
+                name: In(dto.roles as any),
             });
         }
 

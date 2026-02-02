@@ -17,12 +17,12 @@ export class ImportReceiptsController {
     constructor(private readonly service: ImportReceiptsService) {}
 
     @Post()
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
     create(@Body() dto: CreateImportReceiptDto, @CurrentUser() user: User) {
         return this.service.create(dto, user);
     }
 
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
     @Patch(':id/complete')
     @Roles(RoleName.THU_KHO)
     complete(@Param('id') id: string, @CurrentUser() user: User) {
@@ -39,7 +39,7 @@ export class ImportReceiptsController {
         return this.service.findOne(id);
     }
 
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
     @Patch(':id/cancel')
     cancel(@Param('id') id: string, @CurrentUser() user: User) {
         return this.service.cancel(id, user);

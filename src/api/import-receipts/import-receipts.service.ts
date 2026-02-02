@@ -17,12 +17,6 @@ export class ImportReceiptsService {
         @InjectRepository(ImportReceipt)
         private readonly receiptRepo: Repository<ImportReceipt>,
 
-        @InjectRepository(ImportReceiptItem)
-        private readonly itemRepo: Repository<ImportReceiptItem>,
-
-        @InjectRepository(Inventory)
-        private readonly inventoryRepo: Repository<Inventory>,
-
         private readonly auditLogsService: AuditLogsService,
     ) {}
 

@@ -14,6 +14,7 @@ import { ExportReceiptsModule } from './api/export-receipts/export-receipts.modu
 import { StockAdjustmentsModule } from './api/stock-adjustments/stock-adjustments.module';
 import { AuditLogsModule } from './api/audit-logs/audit-logs.module';
 import { AuthModule } from './api/auth/auth.module';
+import { ReportModule } from './api/report/report.module';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { AuthModule } from './api/auth/auth.module';
         UsersModule,
         RolesModule,
         AuthModule,
+        ReportModule,
     ],
     controllers: [AppController],
     providers: [AppService],
