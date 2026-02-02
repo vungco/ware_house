@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, MinLength } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, MinLength } from 'class-validator';
 import { UserStatus } from '../entities/user.entity';
+import { RoleName } from 'src/api/roles/entities/role.entity';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'thukho01' })
@@ -23,6 +24,7 @@ export class CreateUserDto {
   @IsEnum(UserStatus)
   status: UserStatus;
 
-  @ApiProperty({ example: ['THU_KHO'] })
-  roles: string[];
+  @ApiProperty({ example: [RoleName.THU_KHO] })
+  @IsArray()
+  roles: string;
 }
