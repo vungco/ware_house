@@ -14,7 +14,7 @@ export class AuditLogsService {
 
   async create(data: CreateAuditLogDto): Promise<void> {
     const auditLog = this.auditLogRepository.create({
-      user_id: data.userId ?? null,
+      user_id: data.userId,
       action: data.action,
       entity_name: data.entityName,
       entity_id: data.entityId ?? null,

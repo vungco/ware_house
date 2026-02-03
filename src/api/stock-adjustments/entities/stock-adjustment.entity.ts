@@ -48,5 +48,5 @@ export class StockAdjustment extends BaseEntity {
 
   @ManyToOne(() => User, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'created_by' })
-  creator?: User | null;
+  creator: User;
 }

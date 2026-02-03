@@ -40,7 +40,7 @@ export class WarehousesController {
         return this.warehousesService.update(id, dto, user);
     }
 
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Roles(RoleName.QUAN_LY)
     @Delete(':id')
     remove(@Param('id') id: string, @CurrentUser() user: User) {
         return this.warehousesService.remove(id, user);

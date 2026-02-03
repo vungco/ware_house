@@ -11,6 +11,7 @@ import { User } from '../users/entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
 import { env } from 'src/config/env';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       secret: env.JWT_SECRET || 'warehouse_secret',
       signOptions: { expiresIn: '1d' },
     }),
+    UsersModule
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

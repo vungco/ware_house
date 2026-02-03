@@ -32,8 +32,8 @@ export enum AuditAction {
 @Entity('audit_logs')
 export class AuditLog extends BaseEntity {
     @Index()
-    @Column({ type: 'uuid', nullable: true })
-    user_id?: string | null;
+    @Column({ type: 'uuid', nullable: false })
+    user_id: string;
 
     @Column({
         type: 'enum',
@@ -62,5 +62,5 @@ export class AuditLog extends BaseEntity {
 
     @ManyToOne(() => User, (u) => u.audit_logs, { onDelete: 'SET NULL' })
     @JoinColumn({ name: 'user_id' })
-    user?: User | null;
+    user: User;
 }

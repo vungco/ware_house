@@ -12,6 +12,7 @@ import { ExportReceipt } from '../export-receipts/entities/export-receipt.entity
 import { Supplier } from '../suppliers/entities/supplier.entity';
 import { ExportReceiptItem } from '../export-receipts/entities/export-receipt-item.entity';
 import { StockAdjustment } from '../stock-adjustments/entities/stock-adjustment.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { StockAdjustment } from '../stock-adjustments/entities/stock-adjustment.
             StockAdjustment,
         ]),
         AuditLogsModule,
+        UsersModule
     ],
     controllers: [WarehousesController],
     providers: [WarehousesService],

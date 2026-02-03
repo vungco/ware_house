@@ -82,6 +82,7 @@ export class ImportReceiptsService {
                         warehouse_id: receipt.warehouse_id,
                         material_id: item.material_id,
                         quantity: item.quantity,
+                        min_quantity: 0,
                     });
                 } else {
                     inventory.quantity += item.quantity;
