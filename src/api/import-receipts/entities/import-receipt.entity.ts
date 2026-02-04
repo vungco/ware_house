@@ -29,7 +29,7 @@ export class ImportReceipt extends BaseEntity {
   @Column({ type: 'uuid', nullable: true })
   created_by?: string | null;
 
-  @Column({ type: 'varchar', length: 20, default: ReceiptStatus.DRAFT })
+  @Column({ type: 'enum', enum:ReceiptStatus, default: ReceiptStatus.DRAFT })
   status: ReceiptStatus;
 
   @ManyToOne(() => Warehouse, (w) => w.import_receipts, { onDelete: 'RESTRICT' })
@@ -42,7 +42,7 @@ export class ImportReceipt extends BaseEntity {
 
   @ManyToOne(() => User, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'created_by' })
-  creator?: User | null;
+  creator: User;
 
   @OneToMany(() => ImportReceiptItem, (i) => i.receipt, { cascade: false })
   items: ImportReceiptItem[];

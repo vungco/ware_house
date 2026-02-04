@@ -8,6 +8,7 @@ import { Inventory } from '../inventories/entities/inventory.entity';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { User } from '../users/entities/user.entity';
 import { AuditAction } from '../audit-logs/entities/audit-log.entity';
+import { AccountsService } from '../accounts/accounts.service';
 
 @Injectable()
 export class ImportReceiptsService {
@@ -18,6 +19,7 @@ export class ImportReceiptsService {
         private readonly receiptRepo: Repository<ImportReceipt>,
 
         private readonly auditLogsService: AuditLogsService,
+        private readonly accountsService: AccountsService,
     ) {}
 
     // ================= CREATE =================
@@ -69,6 +71,7 @@ export class ImportReceiptsService {
             }
 
             // Update inventory
+            // Update inventory (WITH PRICE)
             for (const item of receipt.items) {
                 let inventory = await manager.findOne(Inventory, {
                     where: {
@@ -77,14 +80,30 @@ export class ImportReceiptsService {
                     },
                 });
 
+                const importQty = Number(item.quantity);
+                const importPrice = Number(item.price);
+                const importValue = importQty * importPrice;
+
                 if (!inventory) {
+                    // LẦN ĐẦU NHẬP
                     inventory = manager.create(Inventory, {
                         warehouse_id: receipt.warehouse_id,
                         material_id: item.material_id,
-                        quantity: item.quantity,
+                        quantity: importQty,
+                        avg_price: importPrice,
+                        total_value: importValue,
+                        min_quantity: 0,
                     });
                 } else {
-                    inventory.quantity += item.quantity;
+                    const oldQty = Number(inventory.quantity);
+                    const oldValue = Number(inventory.total_value);
+
+                    const newQty = oldQty + importQty;
+                    const newValue = oldValue + importValue;
+
+                    inventory.quantity = newQty;
+                    inventory.total_value = newValue;
+                    inventory.avg_price = newQty > 0 ? newValue / newQty : 0;
                 }
 
                 await manager.save(inventory);
@@ -92,6 +111,8 @@ export class ImportReceiptsService {
 
             receipt.status = ReceiptStatus.COMPLETED;
             await manager.save(receipt);
+
+            await this.accountsService.createImportEntry(manager, receipt, user.id);
 
             await this.auditLogsService.create({
                 userId: user.id,

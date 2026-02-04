@@ -1,8 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { WarehouseStatus } from '../entities/warehouse.entity';
 
 export class CreateWarehouseDto {
+
   @ApiProperty({
     example: 'WH_001',
     description: 'Mã kho (duy nhất)',
@@ -34,4 +35,12 @@ export class CreateWarehouseDto {
   })
   @IsEnum(WarehouseStatus)
   status: WarehouseStatus;
+
+  // ===== USER PHỤ TRÁCH =====
+  @ApiProperty({
+    example: 'uuid-user-id',
+    description: 'User phụ trách kho',
+  })
+  @IsUUID()
+  user_id: string;
 }

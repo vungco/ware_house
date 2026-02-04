@@ -32,6 +32,7 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
     @CurrentUser() currentUser: User,
   ) {
+    
     return this.usersService.create(createUserDto, currentUser);
   }
 
