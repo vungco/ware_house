@@ -15,6 +15,9 @@ import { StockAdjustmentsModule } from './api/stock-adjustments/stock-adjustment
 import { AuditLogsModule } from './api/audit-logs/audit-logs.module';
 import { AuthModule } from './api/auth/auth.module';
 import { ReportModule } from './api/report/report.module';
+import { AccountsModule } from './api/accounts/accounts.module';
+import { JournalEntriesModule } from './api/journal-entries/journal-entries.module';
+import { JournalEntryLinesModule } from './api/journal-entry-lines/journal-entry-lines.module';
 
 @Module({
     imports: [
@@ -34,6 +37,9 @@ import { ReportModule } from './api/report/report.module';
         RolesModule,
         AuthModule,
         ReportModule,
+        AccountsModule,
+        JournalEntriesModule,
+        JournalEntryLinesModule,
     ],
     controllers: [AppController],
     providers: [AppService],

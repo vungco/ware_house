@@ -8,13 +8,13 @@ export class TopExportQuery {
     @IsUUID()
     warehouseId: string;
 
-    @ApiProperty({ example: '2024-01-01' })
-    @IsDateString()
-    fromDate: string;
+    @ApiPropertyOptional({ example: '2025-01-01' })
+    @IsOptional()
+    fromDate?: string;
 
-    @ApiProperty({ example: '2024-01-31' })
-    @IsDateString()
-    toDate: string;
+    @ApiPropertyOptional({ example: '2025-01-31' })
+    @IsOptional()
+    toDate?: string;
 
     @ApiPropertyOptional({ example: 5, description: 'Số vật tư top' })
     @IsOptional()

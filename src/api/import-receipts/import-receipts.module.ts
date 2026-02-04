@@ -6,6 +6,7 @@ import { ImportReceiptsService } from './import-receipts.service';
 import { ImportReceiptsController } from './import-receipts.controller';
 import { Inventory } from '../inventories/entities/inventory.entity';
 import { AuditLogsModule } from '../audit-logs/audit-logs.module';
+import { AccountsModule } from '../accounts/accounts.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuditLogsModule } from '../audit-logs/audit-logs.module';
       Inventory,
     ]),
     AuditLogsModule,
+    AccountsModule
   ],
   controllers: [ImportReceiptsController],
   providers: [ImportReceiptsService],

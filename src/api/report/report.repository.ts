@@ -1,8 +1,8 @@
 import {
-  Injectable,
-  InternalServerErrorException,
-  BadRequestException,
-  Logger,
+    Injectable,
+    InternalServerErrorException,
+    BadRequestException,
+    Logger,
 } from '@nestjs/common';
 import { DataSource, QueryFailedError } from 'typeorm';
 import { InventorySummaryQuery } from './dto/inventory-summary.query';
@@ -10,17 +10,19 @@ import { TopExportQuery } from './dto/top-export.query';
 
 @Injectable()
 export class ReportRepository {
-  constructor(private readonly dataSource: DataSource) {}
+    constructor(private readonly dataSource: DataSource) {}
 
-  // ======================================
-  // BÁO CÁO TỒN KHO TỔNG HỢP
-  // ======================================
-  async getInventorySummary(query: InventorySummaryQuery) {
-    const { warehouseId, fromDate, toDate } = query;
+    // ======================================
+    // BÁO CÁO TỒN KHO TỔNG HỢP
+    // ======================================
+    async getInventorySummary(query: InventorySummaryQuery) {
+        const { warehouseId, fromDate, toDate } = query;
 
-    try {
-      return await this.dataSource.query(
-        `
+        const { from, to } = this.normalizeDateRange(fromDate, toDate);
+
+        try {
+            return await this.dataSource.query(
+                `
         SELECT
           m.id   AS "materialId",
           m.code AS "materialCode",
@@ -68,28 +70,30 @@ export class ReportRepository {
 
         ORDER BY m.name
         `,
-        [fromDate, fromDate, toDate, warehouseId],
-      );
-    } catch (error) {
-      Logger.error(error, 'ReportRepository.getInventorySummary');
+                [from, from, to, warehouseId],
+            );
+        } catch (error) {
+            Logger.error(error, 'ReportRepository.getInventorySummary');
 
-      if (error instanceof QueryFailedError) {
-        throw new BadRequestException('Invalid inventory summary query parameters');
-      }
+            if (error instanceof QueryFailedError) {
+                throw new BadRequestException('Invalid inventory summary query parameters');
+            }
 
-      throw new InternalServerErrorException('Failed to get inventory summary');
+            throw new InternalServerErrorException('Failed to get inventory summary');
+        }
     }
-  }
 
-  // ======================================
-  // TOP VẬT TƯ XUẤT KHO NHIỀU NHẤT
-  // ======================================
-  async getTopExportMaterials(query: TopExportQuery) {
-    const { warehouseId, fromDate, toDate, limit } = query;
+    // ======================================
+    // TOP VẬT TƯ XUẤT KHO NHIỀU NHẤT
+    // ======================================
+    async getTopExportMaterials(query: TopExportQuery) {
+        const { warehouseId, fromDate, toDate, limit } = query;
 
-    try {
-      return await this.dataSource.query(
-        `
+        const { from, to } = this.normalizeDateRange(fromDate, toDate);
+
+        try {
+            return await this.dataSource.query(
+                `
         SELECT
           m.id   AS "materialId",
           m.name AS "materialName",
@@ -108,26 +112,26 @@ export class ReportRepository {
         ORDER BY "exportQuantity" DESC
         LIMIT $4
         `,
-        [warehouseId, fromDate, toDate, limit ?? 5],
-      );
-    } catch (error) {
-      Logger.error(error, 'ReportRepository.getTopExportMaterials');
+                [warehouseId, from, to, limit ?? 5],
+            );
+        } catch (error) {
+            Logger.error(error, 'ReportRepository.getTopExportMaterials');
 
-      if (error instanceof QueryFailedError) {
-        throw new BadRequestException('Invalid top export query parameters');
-      }
+            if (error instanceof QueryFailedError) {
+                throw new BadRequestException('Invalid top export query parameters');
+            }
 
-      throw new InternalServerErrorException('Failed to get top export materials');
+            throw new InternalServerErrorException('Failed to get top export materials');
+        }
     }
-  }
 
-  // ======================================
-  // CƠ CẤU TỒN KHO
-  // ======================================
-  async getInventoryStructure(warehouseId: string) {
-    try {
-      return await this.dataSource.query(
-        `
+    // ======================================
+    // CƠ CẤU TỒN KHO
+    // ======================================
+    async getInventoryStructure(warehouseId: string) {
+        try {
+            return await this.dataSource.query(
+                `
         SELECT
           m.id   AS "materialId",
           m.name AS "materialName",
@@ -140,16 +144,26 @@ export class ReportRepository {
         WHERE i.warehouse_id = $1
         ORDER BY m.name
         `,
-        [warehouseId],
-      );
-    } catch (error) {
-      Logger.error(error, 'ReportRepository.getInventoryStructure');
+                [warehouseId],
+            );
+        } catch (error) {
+            Logger.error(error, 'ReportRepository.getInventoryStructure');
 
-      if (error instanceof QueryFailedError) {
-        throw new BadRequestException('Invalid inventory structure query parameters');
-      }
+            if (error instanceof QueryFailedError) {
+                throw new BadRequestException('Invalid inventory structure query parameters');
+            }
 
-      throw new InternalServerErrorException('Failed to get inventory structure');
+            throw new InternalServerErrorException('Failed to get inventory structure');
+        }
     }
-  }
+
+    private normalizeDateRange(fromDate?: string, toDate?: string) {
+        const defaultFrom = '2025-01-01';
+        const defaultTo = new Date().toISOString().slice(0, 10);
+
+        return {
+            from: fromDate ?? defaultFrom,
+            to: toDate ?? defaultTo,
+        };
+    }
 }
