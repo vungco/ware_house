@@ -7,23 +7,29 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuditLogsService {
-  constructor(
-    @InjectRepository(AuditLog)
-    private readonly auditLogRepository: Repository<AuditLog>,
-  ) {}
+    constructor(
+        @InjectRepository(AuditLog)
+        private readonly auditLogRepository: Repository<AuditLog>,
+    ) {}
 
-  async create(data: CreateAuditLogDto): Promise<void> {
-    const auditLog = this.auditLogRepository.create({
-      user_id: data.userId,
-      action: data.action,
-      entity_name: data.entityName,
-      entity_id: data.entityId ?? null,
-      old_value: data.oldValue ?? null,
-      new_value: data.newValue ?? null,
-      ip: data.ip ?? null,
-      user_agent: data.userAgent ?? null,
-    });
+    async create(data: CreateAuditLogDto): Promise<void> {
+        const auditLog = this.auditLogRepository.create({
+            user_id: data.userId,
+            action: data.action,
+            entity_name: data.entityName,
+            entity_id: data.entityId ?? null,
+            old_value: data.oldValue ?? null,
+            new_value: data.newValue ?? null,
+            ip: data.ip ?? null,
+            user_agent: data.userAgent ?? null,
+        });
 
-    await this.auditLogRepository.save(auditLog);
-  }
+        await this.auditLogRepository.save(auditLog);
+    }
+
+    async findAll() {
+        return this.auditLogRepository.find({
+            order: { created_at: 'DESC' },
+        });
+    }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, UseGuards, Delete } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ImportReceiptsService } from './import-receipts.service';
 import { CreateImportReceiptDto } from './dto/create-import-receipt.dto';
@@ -17,12 +17,12 @@ export class ImportReceiptsController {
     constructor(private readonly service: ImportReceiptsService) {}
 
     @Post()
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     create(@Body() dto: CreateImportReceiptDto, @CurrentUser() user: User) {
         return this.service.create(dto, user);
     }
 
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
+    @Roles(RoleName.QUAN_LY)
     @Patch(':id/complete')
     @Roles(RoleName.THU_KHO)
     complete(@Param('id') id: string, @CurrentUser() user: User) {
@@ -39,9 +39,15 @@ export class ImportReceiptsController {
         return this.service.findOne(id);
     }
 
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
+    @Roles(RoleName.QUAN_LY)
     @Patch(':id/cancel')
     cancel(@Param('id') id: string, @CurrentUser() user: User) {
         return this.service.cancel(id, user);
+    }
+
+    @Roles(RoleName.QUAN_LY)
+    @Delete(':id')
+    remove(@Param('id') id: string, @CurrentUser() user: User) {
+        return this.service.remove(id, user);
     }
 }

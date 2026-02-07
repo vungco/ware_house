@@ -182,4 +182,37 @@ export class ImportReceiptsService {
 
         return savedReceipt;
     }
+
+    async remove(id: string, user: User) {
+        return this.dataSource.transaction(async (manager) => {
+            const receipt = await manager.findOne(ImportReceipt, {
+                where: { id },
+                relations: ['items'],
+            });
+
+            if (!receipt) {
+                throw new NotFoundException('Import receipt not found');
+            }
+
+            if (receipt.status !== ReceiptStatus.DRAFT) {
+                throw new BadRequestException('Only DRAFT receipt can be deleted');
+            }
+
+            // delete items trước
+            await manager.delete(ImportReceiptItem, { receipt_id: id });
+
+            // delete receipt
+            await manager.delete(ImportReceipt, id);
+
+            // log
+            await this.auditLogsService.create({
+                userId: user.id,
+                action: AuditAction.DELETE,
+                entityName: 'ImportReceipt',
+                entityId: id,
+            });
+
+            return { message: 'Deleted successfully' };
+        });
+    }
 }

@@ -17,7 +17,7 @@ export class ExportReceiptsController {
     constructor(private readonly exportReceiptsService: ExportReceiptsService) {}
 
     // ================= CREATE =================
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
+    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     @Post()
     create(@Body() dto: CreateExportReceiptDto, @CurrentUser() user: User) {
         return this.exportReceiptsService.create(dto, user);
@@ -36,13 +36,13 @@ export class ExportReceiptsController {
     }
 
     // ================= CANCEL =================
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
+    @Roles(RoleName.QUAN_LY)
     @Patch(':id/cancel')
     cancel(@Param('id') id: string, @CurrentUser() user: User) {
         return this.exportReceiptsService.cancel(id, user);
     }
 
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO,RoleName.KE_TOAN)
+    @Roles(RoleName.QUAN_LY)
     @Patch(':id/complete')
     complete(@Param('id') id: string, @CurrentUser() user: User) {
         return this.exportReceiptsService.complete(id, user);
