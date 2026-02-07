@@ -18,13 +18,4 @@ export class ReportService {
   async getInventoryStructure(warehouseId: string) {
     return this.repo.getInventoryStructure(warehouseId);
   }
-
-  async exportInventorySummary(query: InventorySummaryQuery) {
-    const data = await this.repo.getInventorySummary(query);
-    // gọi excel service (xlsx / exceljs)
-    return {
-      message: 'Export success',
-      data,
-    };
-  }
 }

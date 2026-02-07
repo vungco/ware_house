@@ -24,51 +24,44 @@ export class ReportRepository {
             return await this.dataSource.query(
                 `
         SELECT
-          m.id   AS "materialId",
-          m.code AS "materialCode",
-          m.name AS "materialName",
-          m.unit AS "unit",
+            m.id   AS "materialId",
+            m.code AS "materialCode",
+            m.name AS "materialName",
+            m.unit AS "unit",
 
-          COALESCE(
-            SUM(CASE WHEN ir.created_at < $1 THEN iri.quantity ELSE 0 END),
-            0
-          )
-          -
-          COALESCE(
-            SUM(CASE WHEN er.created_at < $1 THEN eri.quantity ELSE 0 END),
-            0
-          ) AS "openingStock",
+            COALESCE(i.opening_import,0) - COALESCE(e.opening_export,0) AS "openingStock",
+            COALESCE(i.period_import,0)  AS "importQuantity",
+            COALESCE(e.period_export,0)  AS "exportQuantity",
 
-          COALESCE(
-            SUM(CASE WHEN ir.created_at BETWEEN $2 AND $3 THEN iri.quantity ELSE 0 END),
-            0
-          ) AS "importQuantity",
-
-          COALESCE(
-            SUM(CASE WHEN er.created_at BETWEEN $2 AND $3 THEN eri.quantity ELSE 0 END),
-            0
-          ) AS "exportQuantity"
+            (COALESCE(i.opening_import,0) - COALESCE(e.opening_export,0)
+            + COALESCE(i.period_import,0) - COALESCE(e.period_export,0)) AS "closingStock"
 
         FROM materials m
 
-        LEFT JOIN import_receipt_items iri
-          ON iri.material_id = m.id
+        LEFT JOIN (
+            SELECT
+                iri.material_id,
+                SUM(CASE WHEN ir.created_at < $1 THEN iri.quantity ELSE 0 END) AS opening_import,
+                SUM(CASE WHEN ir.created_at BETWEEN $2 AND $3 THEN iri.quantity ELSE 0 END) AS period_import
+            FROM import_receipt_items iri
+            JOIN import_receipts ir ON ir.id = iri.receipt_id
+            WHERE ir.warehouse_id = $4
+            GROUP BY iri.material_id
+        ) i ON i.material_id = m.id
 
-        LEFT JOIN import_receipts ir
-          ON ir.id = iri.id
-         AND ir.warehouse_id = $4
+        LEFT JOIN (
+            SELECT
+                eri.material_id,
+                SUM(CASE WHEN er.created_at < $1 THEN eri.quantity ELSE 0 END) AS opening_export,
+                SUM(CASE WHEN er.created_at BETWEEN $2 AND $3 THEN eri.quantity ELSE 0 END) AS period_export
+            FROM export_receipt_items eri
+            JOIN export_receipts er ON er.id = eri.receipt_id
+            WHERE er.warehouse_id = $4
+            GROUP BY eri.material_id
+        ) e ON e.material_id = m.id
 
-        LEFT JOIN export_receipt_items eri
-          ON eri.material_id = m.id
+        ORDER BY m.name;
 
-        LEFT JOIN export_receipts er
-          ON er.id = eri.id
-         AND er.warehouse_id = $4
-
-        GROUP BY
-          m.id, m.code, m.name, m.unit
-
-        ORDER BY m.name
         `,
                 [from, from, to, warehouseId],
             );
@@ -101,7 +94,7 @@ export class ReportRepository {
 
         FROM export_receipt_items eri
         JOIN export_receipts er
-          ON er.id = eri.id
+          ON er.id = eri.receipt_id
         JOIN materials m
           ON m.id = eri.material_id
 

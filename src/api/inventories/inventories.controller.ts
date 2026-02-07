@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/decorators/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -9,6 +9,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { SearchInventoryDto } from './dto/search-inventory.dto';
 
 @Controller('inventories')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,11 +27,17 @@ export class InventoriesController {
     findAll() {
         return this.inventoriesService.findAll();
     }
+    
+    @Get('search')
+    find(@Query() query: SearchInventoryDto) {
+        return this.inventoriesService.search(query);
+    }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.inventoriesService.findOne(id);
     }
+
 
     @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     @Patch(':id')

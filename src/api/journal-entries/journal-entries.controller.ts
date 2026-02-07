@@ -36,7 +36,7 @@ export class JournalEntriesController {
 
     @Delete(':id')
     @Roles(RoleName.QUAN_LY)
-    remove(@Param('id') id: string) {
-        return this.service.remove(id);
+    remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
+        return this.service.remove(id, currentUser.id);
     }
 }

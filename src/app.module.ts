@@ -18,6 +18,7 @@ import { ReportModule } from './api/report/report.module';
 import { AccountsModule } from './api/accounts/accounts.module';
 import { JournalEntriesModule } from './api/journal-entries/journal-entries.module';
 import { JournalEntryLinesModule } from './api/journal-entry-lines/journal-entry-lines.module';
+import { StocktakesModule } from './api/stocktakes/stocktakes.module';
 
 @Module({
     imports: [
@@ -40,6 +41,7 @@ import { JournalEntryLinesModule } from './api/journal-entry-lines/journal-entry
         AccountsModule,
         JournalEntriesModule,
         JournalEntryLinesModule,
+        StocktakesModule,
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -17,7 +17,7 @@ export class WarehousesController {
     constructor(private readonly warehousesService: WarehousesService) {}
 
     @Post()
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
+    @Roles(RoleName.QUAN_LY)
     create(@Body() dto: CreateWarehouseDto, @CurrentUser() user: User) {
         return this.warehousesService.create(dto, user);
     }

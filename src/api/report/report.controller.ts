@@ -29,10 +29,4 @@ export class ReportController {
     getInventoryStructure(@Query('warehouseId') warehouseId: string) {
         return this.reportService.getInventoryStructure(warehouseId);
     }
-
-    // XUẤT EXCEL
-    @Get('inventory-summary/export')
-    exportInventorySummary(@Query() query: InventorySummaryQuery) {
-        return this.reportService.exportInventorySummary(query);
-    }
 }

@@ -15,5 +15,6 @@ import { AccountsModule } from '../accounts/accounts.module';
   ],
   controllers: [StockAdjustmentsController],
   providers: [StockAdjustmentsService],
+  exports: [StockAdjustmentsService],
 })
 export class StockAdjustmentsModule {}
