@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,50 +11,45 @@ import { RolesGuard } from '../auth/decorators/roles.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RoleName.QUAN_LY)
 @ApiBearerAuth('Authorization')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) {}
 
-  // CREATE
-  @Post()
-  create(
-    @Body() createUserDto: CreateUserDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    
-    return this.usersService.create(createUserDto, currentUser);
-  }
+    // CREATE
+    @Roles(RoleName.QUAN_LY)
+    @Post()
+    create(@Body() createUserDto: CreateUserDto, @CurrentUser() currentUser: User) {
+        return this.usersService.create(createUserDto, currentUser);
+    }
 
-  // READ ALL
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+    // READ ALL
+    @Get()
+    findAll() {
+        return this.usersService.findAll();
+    }
 
-  // READ ONE
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
+    // READ ONE
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.usersService.findOne(id);
+    }
 
-  // UPDATE
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.usersService.update(id, updateUserDto, currentUser);
-  }
+    // UPDATE
+    @Roles(RoleName.QUAN_LY)
+    @Patch(':id')
+    update(
+        @Param('id') id: string,
+        @Body() updateUserDto: UpdateUserDto,
+        @CurrentUser() currentUser: User,
+    ) {
+        return this.usersService.update(id, updateUserDto, currentUser);
+    }
 
-  // DELETE
-  @Delete(':id')
-  remove(
-    @Param('id') id: string,
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.usersService.remove(id, currentUser);
-  }
+    // DELETE
+    @Roles(RoleName.QUAN_LY)
+    @Delete(':id')
+    remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
+        return this.usersService.remove(id, currentUser);
+    }
 }
