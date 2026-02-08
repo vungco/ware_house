@@ -23,13 +23,11 @@ export class WarehousesController {
     }
 
     @Get()
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     findAll() {
         return this.warehousesService.findAll();
     }
 
     @Get(':id')
-    @Roles(RoleName.QUAN_LY, RoleName.THU_KHO)
     findOne(@Param('id') id: string) {
         return this.warehousesService.findOne(id);
     }
