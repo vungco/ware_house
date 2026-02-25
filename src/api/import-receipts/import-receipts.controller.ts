@@ -24,7 +24,6 @@ export class ImportReceiptsController {
 
     @Roles(RoleName.QUAN_LY)
     @Patch(':id/complete')
-    @Roles(RoleName.THU_KHO)
     complete(@Param('id') id: string, @CurrentUser() user: User) {
         return this.service.complete(id, user);
     }

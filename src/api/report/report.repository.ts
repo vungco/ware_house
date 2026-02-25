@@ -151,12 +151,18 @@ export class ReportRepository {
     }
 
     private normalizeDateRange(fromDate?: string, toDate?: string) {
-        const defaultFrom = '2025-01-01';
-        const defaultTo = new Date().toISOString().slice(0, 10);
+        const defaultFrom = new Date('2025-01-01');
+        const defaultTo = new Date();
+
+        const from = fromDate ? new Date(fromDate) : defaultFrom;
+        const to = toDate ? new Date(toDate) : defaultTo;
+
+        // cộng thêm 1 ngày
+        to.setDate(to.getDate() + 1);
 
         return {
-            from: fromDate ?? defaultFrom,
-            to: toDate ?? defaultTo,
+            from: from.toISOString(),
+            to: to.toISOString(),
         };
     }
 }
