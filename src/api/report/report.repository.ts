@@ -57,6 +57,7 @@ export class ReportRepository {
             FROM export_receipt_items eri
             JOIN export_receipts er ON er.id = eri.receipt_id
             WHERE er.warehouse_id = $4
+            AND er.status = 'COMPLETED'
             GROUP BY eri.material_id
         ) e ON e.material_id = m.id
 
@@ -100,6 +101,7 @@ export class ReportRepository {
 
         WHERE er.warehouse_id = $1
           AND er.created_at BETWEEN $2 AND $3
+          AND er.status = 'COMPLETED'
 
         GROUP BY m.id, m.name
         ORDER BY "exportQuantity" DESC
