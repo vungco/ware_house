@@ -2,7 +2,7 @@ services:
   warehouse-api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     container_name: warehouse-api
     restart: unless-stopped
     depends_on:
